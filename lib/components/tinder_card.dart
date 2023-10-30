@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tinder_clone/card_model.dart';
 import 'package:tinder_clone/tinder_card_provider.dart';
+import 'package:get/get.dart';
 
 class TinderCard extends StatefulWidget {
   final bool isFront;
@@ -160,6 +161,7 @@ class _TinderCardState extends State<TinderCard> {
                       Expanded(
                         child: GestureDetector(
                           onTap: () {
+                            Get.snackbar("title", "message");
                             _pageController.previousPage(
                               duration: const Duration(milliseconds: 300),
                               curve: Curves.easeInOut,
