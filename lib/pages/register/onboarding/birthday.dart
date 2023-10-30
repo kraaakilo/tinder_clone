@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:tinder_clone/controllers/register.dart';
 import 'package:get/get.dart';
-import 'package:tinder_clone/pages/register/onboarding/gender.dart';
+import 'package:tinder_clone/pages/register/onboarding/passions.dart';
 
-class GetNameScreen extends StatefulWidget {
-  const GetNameScreen({super.key});
+class GetBirthScreen extends StatefulWidget {
+  const GetBirthScreen({super.key});
 
   @override
-  State<GetNameScreen> createState() => _GetNameScreenState();
+  State<GetBirthScreen> createState() => _GetBirthScreenState();
 }
 
-class _GetNameScreenState extends State<GetNameScreen> {
+class _GetBirthScreenState extends State<GetBirthScreen> {
   final registerController = Get.find<RegisterController>();
   @override
   Widget build(BuildContext context) {
@@ -36,31 +36,38 @@ class _GetNameScreenState extends State<GetNameScreen> {
               ),
               const SizedBox(height: 40),
               const Text(
-                "My name is",
+                "My birthday is",
                 style: TextStyle(
                   fontSize: 30,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
               Obx(
-                () => TextFormField(
-                  initialValue: registerController.name.value,
-                  onChanged: (value) {
-                    registerController.setName(value);
+                () => GestureDetector(
+                  onTap: () {
+                    registerController.setDob("value");
                   },
-                  decoration: const InputDecoration(
-                    hintText: "Name",
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(
-                        color: Color(0xFFf3606e),
+                  child: TextFormField(
+                    initialValue: registerController.dob.value,
+                    enabled: true,
+                    onChanged: (value) {
+                      registerController.setDob(value);
+                    },
+                    decoration: const InputDecoration(
+                      hintText: "DD / MM / YYYY",
+                      focusedBorder: UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Color(0xFFf3606e),
+                        ),
                       ),
                     ),
+                    keyboardType: TextInputType.datetime,
                   ),
-                  keyboardType: TextInputType.name,
                 ),
               ),
               const SizedBox(height: 20),
               const Text(
-                "This is how it will appear in Tinder, and it can't be changed later.",
+                "Your age will be public.",
                 style: TextStyle(
                   fontSize: 12,
                   color: Colors.grey,
@@ -76,7 +83,7 @@ class _GetNameScreenState extends State<GetNameScreen> {
                         ? () {
                             FocusScope.of(context).unfocus();
                             Get.to(
-                              () => const GetGenderScreen(),
+                              () => const GetPassionsScreen(),
                               transition: Transition.rightToLeft,
                             );
                           }

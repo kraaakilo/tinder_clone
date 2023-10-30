@@ -2,26 +2,27 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:tinder_clone/card_model.dart';
-import 'package:tinder_clone/tinder_card_provider.dart';
-import 'package:get/get.dart';
+import 'package:tinder_clone/models/user.dart';
+import 'package:tinder_clone/providers/tinder_card_provider.dart';
+import 'package:preload_page_view/preload_page_view.dart';
 
 class TinderCard extends StatefulWidget {
   final bool isFront;
-  final CardModel cardModel;
+  final UserModel user;
 
-  const TinderCard({super.key, required this.isFront, required this.cardModel});
+  const TinderCard({super.key, required this.isFront, required this.user});
 
   @override
   State<TinderCard> createState() => _TinderCardState();
 }
 
 class _TinderCardState extends State<TinderCard> {
-  final PageController _pageController = PageController(
+  final PreloadPageController _pageController = PreloadPageController(
     initialPage: 0,
   );
 
   int activeIndex = 0;
+  bool isPassionExpanded = false;
 
   @override
   void initState() {
@@ -57,14 +58,25 @@ class _TinderCardState extends State<TinderCard> {
         height: double.infinity,
         child: Stack(
           children: [
-            PageView(
+            PreloadPageView(
               controller: _pageController,
               physics: const NeverScrollableScrollPhysics(),
-              children: widget.cardModel.photos
+              children: widget.user.photos
                   .map(
                     (image) => Image.network(
                       image,
                       fit: BoxFit.cover,
+                      loadingBuilder: (
+                        BuildContext context,
+                        Widget child,
+                        ImageChunkEvent? loadingProgress,
+                      ) {
+                        return loadingProgress == null
+                            ? child
+                            : const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                      },
                     ),
                   )
                   .toList(),
@@ -88,19 +100,19 @@ class _TinderCardState extends State<TinderCard> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       RichText(
-                        text: const TextSpan(
+                        text: TextSpan(
                           children: [
                             TextSpan(
-                              text: "Cardi B ",
-                              style: TextStyle(
+                              text: widget.user.name,
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 24,
                                 fontWeight: FontWeight.w900,
                               ),
                             ),
                             TextSpan(
-                              text: "27",
-                              style: TextStyle(
+                              text: " ${widget.user.age}",
+                              style: const TextStyle(
                                 color: Colors.white,
                                 fontSize: 18,
                               ),
@@ -118,7 +130,7 @@ class _TinderCardState extends State<TinderCard> {
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            "${widget.cardModel.distance.toString()} km away",
+                            widget.user.country,
                             style: const TextStyle(
                               color: Colors.white,
                               fontSize: 16,
@@ -127,30 +139,108 @@ class _TinderCardState extends State<TinderCard> {
                         ],
                       ),
                       const SizedBox(height: 8),
-                      Wrap(
-                        spacing: 8,
-                        runSpacing: 8,
-                        children: widget.cardModel.interests
-                            .map(
-                              (interest) => Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 8,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.grey.withOpacity(0.5),
-                                  borderRadius: BorderRadius.circular(18),
-                                ),
-                                child: Text(
-                                  interest,
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 13,
-                                  ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          AnimatedOpacity(
+                            opacity: isPassionExpanded ? 1 : 0,
+                            duration: const Duration(milliseconds: 200),
+                            curve: Curves.easeInOut,
+                            child: Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: widget.user.passions
+                                  .map(
+                                    (interest) => Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey.withOpacity(0.5),
+                                        borderRadius: BorderRadius.circular(18),
+                                      ),
+                                      child: Text(
+                                        interest,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 13,
+                                        ),
+                                      ),
+                                    ),
+                                  )
+                                  .toList(),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                isPassionExpanded = !isPassionExpanded;
+                              });
+                            },
+                            child: const SizedBox(
+                              width: 20,
+                              child: Icon(
+                                Icons.info,
+                                color: Colors.white,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 20),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              Provider.of<TinderCardProvider>(context,
+                                      listen: false)
+                                  .like(isCliked: true);
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(70),
+                                border: Border.all(
+                                  color: Colors.green,
+                                  width: 1,
                                 ),
                               ),
-                            )
-                            .toList(),
+                              width: 60,
+                              height: 60,
+                              child: const Icon(
+                                Icons.favorite_border,
+                                color: Colors.green,
+                                size: 40,
+                              ),
+                            ),
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              Provider.of<TinderCardProvider>(context,
+                                      listen: false)
+                                  .dislike(isCliked: true);
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(70),
+                                border: Border.all(
+                                  color: Colors.red,
+                                  width: 1,
+                                ),
+                              ),
+                              width: 60,
+                              height: 60,
+                              child: const Icon(
+                                Icons.clear,
+                                color: Colors.red,
+                                weight: 1,
+                                size: 40,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -161,7 +251,6 @@ class _TinderCardState extends State<TinderCard> {
                       Expanded(
                         child: GestureDetector(
                           onTap: () {
-                            Get.snackbar("title", "message");
                             _pageController.previousPage(
                               duration: const Duration(milliseconds: 300),
                               curve: Curves.easeInOut,
@@ -198,14 +287,14 @@ class _TinderCardState extends State<TinderCard> {
                 spacing: 2,
                 alignment: WrapAlignment.spaceEvenly,
                 children: List.generate(
-                  widget.cardModel.photos.length,
+                  widget.user.photos.length,
                   (index) => Container(
                     color: index == activeIndex
                         ? Colors.white
                         : Colors.grey.withOpacity(0.5),
                     height: 2,
                     width: (MediaQuery.of(context).size.width /
-                            widget.cardModel.photos.length) -
+                            widget.user.photos.length) -
                         20,
                   ),
                 ),

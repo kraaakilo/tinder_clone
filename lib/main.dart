@@ -1,17 +1,33 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get/get.dart';
 import 'package:provider/provider.dart';
-import 'package:tinder_clone/card_model.dart';
-import 'package:tinder_clone/tinder_card.dart';
-import 'package:tinder_clone/tinder_card_provider.dart';
+import 'package:tinder_clone/api/firebase_api.dart';
+import 'package:tinder_clone/config/dio.dart';
+import 'package:tinder_clone/config/theme.dart';
+import 'package:tinder_clone/controllers/account.dart';
+import 'package:tinder_clone/controllers/register.dart';
+import 'package:tinder_clone/models/user.dart';
+import 'package:tinder_clone/pages/account/chats.dart';
+import 'package:tinder_clone/pages/start_screen.dart';
+import 'package:tinder_clone/providers/tinder_card_provider.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  FirebaseApi().initNotification();
+  await AuthInterceptor.init();
   runApp(
     ChangeNotifierProvider(
       create: (context) => TinderCardProvider(),
-      child: const MaterialApp(
+      child: GetMaterialApp(
+        theme: buildTheme(Brightness.light),
+        debugShowCheckedModeBanner: false,
         title: "Tinder Clone",
-        home: App(),
+        home: const App(),
       ),
     ),
   );
@@ -22,92 +38,26 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: Image.asset(
-          "assets/images/logo.png",
-          height: 40,
-        ),
-        centerTitle: true,
-        leading: ClipRRect(
-          borderRadius: BorderRadius.circular(25.0),
-          child: const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: CircleAvatar(
-              backgroundImage: NetworkImage(
-                "https://avatars.githubusercontent.com/u/139426?s=400&u=8e7b6e6d0b9e9b0b0b0b0b0b0b0b0b0b0b0b0b0b&v=4",
-              ),
-              backgroundColor: Colors.transparent,
+    Get.lazyPut(() => AccountController());
+    return FutureBuilder(
+      future: getAuthToken(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError) {}
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Scaffold(
+            body: Center(
+              child: CircularProgressIndicator(),
             ),
-          ),
-        ),
-        actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.notifications,
-              color: Colors.grey,
-              size: 30,
-            ),
-            onPressed: () {},
-          ),
-        ],
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Stack(
-          children: Provider.of<TinderCardProvider>(context)
-              .cards
-              .map(
-                (e) => TinderCard(
-                  isFront:
-                      Provider.of<TinderCardProvider>(context).cards.last == e,
-                  cardModel: chuckNorris,
-                ),
-              )
-              .toList(),
-        ),
-      ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        child: BottomNavigationBar(
-          backgroundColor: Colors.transparent,
-          type: BottomNavigationBarType.fixed,
-          showUnselectedLabels: false,
-          showSelectedLabels: false,
-          elevation: 0,
-          items: [
-            BottomNavigationBarItem(
-              icon: Image.asset(
-                "assets/images/icon.png",
-                height: 35,
-              ),
-              label: "Profile",
-            ),
-            BottomNavigationBarItem(
-              icon: SvgPicture.asset(
-                "assets/icons/star.svg",
-                semanticsLabel: 'A red up arrow',
-                height: 35,
-              ),
-              label: "Chats",
-            ),
-            const BottomNavigationBarItem(
-              icon: Icon(Icons.grid_view_outlined),
-              label: "Profile",
-            ),
-            BottomNavigationBarItem(
-              icon: SvgPicture.asset(
-                "assets/icons/message.svg",
-                semanticsLabel: 'A red up arrow',
-                height: 35,
-              ),
-              label: "Profiles",
-            ),
-          ],
-        ),
-      ),
+          );
+        } else if (snapshot.hasData) {
+          final acc = Get.find<AccountController>();
+          acc.setUser(UserModel.fromJson(snapshot.data.data));
+          return const ChatsScreen();
+        } else {
+          Get.lazyPut(() => RegisterController());
+          return const StartScreen();
+        }
+      },
     );
   }
 }

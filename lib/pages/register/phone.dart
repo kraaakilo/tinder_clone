@@ -1,5 +1,8 @@
 import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:tinder_clone/controllers/register.dart';
+import 'package:get/get.dart';
+import 'package:tinder_clone/pages/register/onboarding/email.dart';
 
 class GetPhoneScreen extends StatefulWidget {
   const GetPhoneScreen({super.key});
@@ -9,9 +12,7 @@ class GetPhoneScreen extends StatefulWidget {
 }
 
 class _GetPhoneScreenState extends State<GetPhoneScreen> {
-  String prefixCode = "+1";
-  String countryCode = "US";
-  String phoneNumber = "";
+  final r = Get.find<RegisterController>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,16 +25,22 @@ class _GetPhoneScreenState extends State<GetPhoneScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(
-                Icons.arrow_back_ios,
-                size: 25,
-                color: Colors.grey,
+              GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: const Icon(
+                  Icons.arrow_back_ios,
+                  size: 25,
+                  color: Colors.grey,
+                ),
               ),
               const SizedBox(height: 40),
               const Text(
                 "My number is",
                 style: TextStyle(
                   fontSize: 30,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
               Row(
@@ -54,31 +61,37 @@ class _GetPhoneScreenState extends State<GetPhoneScreen> {
                             ),
                           ),
                           onSelect: (Country country) {
-                            setState(() {
-                              prefixCode = country.phoneCode;
-                              countryCode = country.countryCode;
-                            });
+                            r.setCountryCode(country.countryCode);
+                            r.setPrefixCode(country.phoneCode);
                           },
                         );
                       },
-                      child: TextFormField(
-                        enabled: false,
-                        decoration: InputDecoration(
-                          hintText: "$countryCode +$prefixCode",
+                      child: Obx(
+                        () => TextFormField(
+                          enabled: false,
+                          decoration: InputDecoration(
+                            hintText: "${r.countryCode} +${r.prefixCode}",
+                          ),
                         ),
                       ),
                     ),
                   ),
                   Expanded(
-                    child: TextFormField(
-                      decoration: const InputDecoration(
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color(0xFFf3606e),
+                    child: Obx(
+                      () => TextFormField(
+                        onChanged: (value) {
+                          r.setPhoneNumber(value);
+                        },
+                        initialValue: r.phoneNumber.value,
+                        decoration: const InputDecoration(
+                          focusedBorder: UnderlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Color(0xFFf3606e),
+                            ),
                           ),
                         ),
+                        keyboardType: TextInputType.phone,
                       ),
-                      keyboardType: TextInputType.phone,
                     ),
                   ),
                 ],
@@ -96,19 +109,28 @@ class _GetPhoneScreenState extends State<GetPhoneScreen> {
               SizedBox(
                 width: double.infinity,
                 height: 50,
-                child: ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25.0),
+                child: Obx(
+                  () => ElevatedButton(
+                    onPressed: r.canGoToNameStep()
+                        ? () {
+                            Get.to(
+                              () => const GetEmailScreen(),
+                              transition: Transition.rightToLeft,
+                            );
+                          }
+                        : null,
+                    style: ElevatedButton.styleFrom(
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25.0),
+                      ),
+                      backgroundColor: const Color(0xFFf3606e),
                     ),
-                    backgroundColor: const Color(0xFFf3606e),
-                  ),
-                  child: const Text(
-                    "Send",
-                    style: TextStyle(
-                      fontSize: 15,
+                    child: const Text(
+                      "Send",
+                      style: TextStyle(
+                        fontSize: 15,
+                      ),
                     ),
                   ),
                 ),

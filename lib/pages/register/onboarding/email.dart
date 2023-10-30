@@ -1,17 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:tinder_clone/controllers/register.dart';
 import 'package:get/get.dart';
-import 'package:tinder_clone/pages/register/onboarding/gender.dart';
+import 'package:tinder_clone/pages/register/onboarding/name.dart';
 
-class GetNameScreen extends StatefulWidget {
-  const GetNameScreen({super.key});
+class GetEmailScreen extends StatefulWidget {
+  const GetEmailScreen({super.key});
 
   @override
-  State<GetNameScreen> createState() => _GetNameScreenState();
+  State<GetEmailScreen> createState() => _GetEmailScreenState();
 }
 
-class _GetNameScreenState extends State<GetNameScreen> {
+class _GetEmailScreenState extends State<GetEmailScreen> {
   final registerController = Get.find<RegisterController>();
+  bool isUsedEmail = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,7 +37,7 @@ class _GetNameScreenState extends State<GetNameScreen> {
               ),
               const SizedBox(height: 40),
               const Text(
-                "My name is",
+                "Type your email to get started.",
                 style: TextStyle(
                   fontSize: 30,
                   fontWeight: FontWeight.bold,
@@ -46,10 +47,13 @@ class _GetNameScreenState extends State<GetNameScreen> {
                 () => TextFormField(
                   initialValue: registerController.name.value,
                   onChanged: (value) {
-                    registerController.setName(value);
+                    setState(() {
+                      isUsedEmail = false;
+                    });
+                    registerController.setEmail(value);
                   },
                   decoration: InputDecoration(
-                    hintText: "Name",
+                    hintText: "Email Address",
                     focusedBorder: UnderlineInputBorder(
                       borderSide: BorderSide(
                         color: Theme.of(context).primaryColor,
@@ -60,8 +64,18 @@ class _GetNameScreenState extends State<GetNameScreen> {
                 ),
               ),
               const SizedBox(height: 20),
+              isUsedEmail
+                  ? const Text(
+                      "Email already in use.",
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.red,
+                      ),
+                    )
+                  : const SizedBox(),
+              const SizedBox(height: 12),
               const Text(
-                "This is how it will appear in Tinder, and it can't be changed later.",
+                "This won't be shown publicly. Confirm your email later.",
                 style: TextStyle(
                   fontSize: 12,
                   color: Colors.grey,
@@ -73,11 +87,18 @@ class _GetNameScreenState extends State<GetNameScreen> {
                 height: 50,
                 child: Obx(
                   () => ElevatedButton(
-                    onPressed: registerController.name.value.isNotEmpty
-                        ? () {
-                            FocusScope.of(context).unfocus();
+                    onPressed: registerController.email.value.isNotEmpty
+                        ? () async {
+                            isUsedEmail = await _checkIsUsedEmail(
+                                registerController.email.value);
+                            if (isUsedEmail) {
+                              setState(() {
+                                isUsedEmail = true;
+                              });
+                              return;
+                            }
                             Get.to(
-                              () => const GetGenderScreen(),
+                              () => const GetNameScreen(),
                               transition: Transition.rightToLeft,
                             );
                           }
@@ -103,5 +124,10 @@ class _GetNameScreenState extends State<GetNameScreen> {
         ),
       ),
     );
+  }
+
+  Future<bool> _checkIsUsedEmail(String email) async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    return false;
   }
 }

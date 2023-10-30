@@ -1,17 +1,17 @@
-import 'package:country_picker/country_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:tinder_clone/controllers/register.dart';
+import 'package:get/get.dart';
+import 'package:tinder_clone/pages/register/onboarding/gender.dart';
 
-class GetPhoneScreen extends StatefulWidget {
-  const GetPhoneScreen({super.key});
+class GetNameScreen extends StatefulWidget {
+  const GetNameScreen({super.key});
 
   @override
-  State<GetPhoneScreen> createState() => _GetPhoneScreenState();
+  State<GetNameScreen> createState() => _GetNameScreenState();
 }
 
-class _GetPhoneScreenState extends State<GetPhoneScreen> {
-  String prefixCode = "+1";
-  String countryCode = "US";
-  String phoneNumber = "";
+class _GetNameScreenState extends State<GetNameScreen> {
+  final registerController = Get.find<RegisterController>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,91 +24,76 @@ class _GetPhoneScreenState extends State<GetPhoneScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Icon(
-                Icons.arrow_back_ios,
-                size: 25,
-                color: Colors.grey,
+              GestureDetector(
+                onTap: () {
+                  Navigator.pop(context);
+                },
+                child: const Icon(
+                  Icons.arrow_back_ios,
+                  size: 25,
+                  color: Colors.grey,
+                ),
               ),
               const SizedBox(height: 40),
               const Text(
-                "My number is",
+                "My name is",
                 style: TextStyle(
                   fontSize: 30,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-              Row(
-                children: [
-                  SizedBox(
-                    width: 100,
-                    child: GestureDetector(
-                      onTap: () {
-                        showCountryPicker(
-                          context: context,
-                          showPhoneCode: true,
-                          showSearch: false,
-                          countryListTheme: const CountryListThemeData(
-                            flagSize: 25,
-                            backgroundColor: Colors.white,
-                            textStyle: TextStyle(
-                              fontSize: 16,
-                            ),
-                          ),
-                          onSelect: (Country country) {
-                            setState(() {
-                              prefixCode = country.phoneCode;
-                              countryCode = country.countryCode;
-                            });
-                          },
-                        );
-                      },
-                      child: TextFormField(
-                        enabled: false,
-                        decoration: InputDecoration(
-                          hintText: "$countryCode +$prefixCode",
-                        ),
+              Obx(
+                () => TextFormField(
+                  initialValue: registerController.name.value,
+                  onChanged: (value) {
+                    registerController.setName(value);
+                  },
+                  decoration: InputDecoration(
+                    hintText: "Name",
+                    focusedBorder: UnderlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Theme.of(context).primaryColor,
                       ),
                     ),
                   ),
-                  Expanded(
-                    child: TextFormField(
-                      decoration: const InputDecoration(
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color(0xFFf3606e),
-                          ),
-                        ),
-                      ),
-                      keyboardType: TextInputType.phone,
-                    ),
-                  ),
-                ],
+                  keyboardType: TextInputType.name,
+                ),
               ),
               const SizedBox(height: 20),
               const Text(
-                "When you tap Continue, Tinder will send a text with verification code. "
-                "Message and data rates may apply. The verified phone number can be used "
-                "to log in. Learn what happens when your number changes.",
+                "This is how it will appear in Tinder, and it can't be changed later.",
                 style: TextStyle(
                   fontSize: 12,
+                  color: Colors.grey,
                 ),
               ),
               const Spacer(),
               SizedBox(
                 width: double.infinity,
                 height: 50,
-                child: ElevatedButton(
-                  onPressed: () {},
-                  style: ElevatedButton.styleFrom(
-                    elevation: 0,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(25.0),
+                child: Obx(
+                  () => ElevatedButton(
+                    onPressed: registerController.name.value.isNotEmpty
+                        ? () {
+                            FocusScope.of(context).unfocus();
+                            Get.to(
+                              () => const GetGenderScreen(),
+                              transition: Transition.rightToLeft,
+                            );
+                          }
+                        : null,
+                    style: ElevatedButton.styleFrom(
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25.0),
+                      ),
+                      backgroundColor: const Color(0xFFf3606e),
                     ),
-                    backgroundColor: const Color(0xFFf3606e),
-                  ),
-                  child: const Text(
-                    "Send",
-                    style: TextStyle(
-                      fontSize: 15,
+                    child: const Text(
+                      "Continue",
+                      style: TextStyle(
+                        fontSize: 15,
+                      ),
                     ),
                   ),
                 ),
