@@ -1,19 +1,19 @@
 import 'package:get/get.dart';
 
 class RegisterController extends GetxController {
-  final phoneNumber = "".obs;
+  final phoneNumber = "sssssssss".obs;
   final prefixCode = "1".obs;
   final countryCode = "US".obs;
-  final email = "".obs;
+  final email = "sss@sss.com".obs;
 
-  final gender = "".obs;
+  final gender = "MALE".obs;
   final showGenderOnProfile = false.obs;
 
-  final dob = "".obs;
+  final dob = "sssssss".obs;
 
   final interests = <String>[].obs;
 
-  final name = "".obs;
+  final name = "sssss".obs;
 
   void setPhoneNumber(String value) {
     phoneNumber.value = value;

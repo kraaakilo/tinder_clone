@@ -6,7 +6,7 @@ import 'package:tinder_clone/config/theme.dart';
 import 'package:tinder_clone/controllers/account.dart';
 import 'package:tinder_clone/controllers/register.dart';
 import 'package:tinder_clone/models/user.dart';
-import 'package:tinder_clone/pages/account/chats.dart';
+import 'package:tinder_clone/pages/account/home.dart';
 import 'package:tinder_clone/pages/start_screen.dart';
 import 'package:tinder_clone/providers/tinder_card_provider.dart';
 
@@ -45,7 +45,7 @@ class App extends StatelessWidget {
         } else if (snapshot.hasData) {
           final acc = Get.find<AccountController>();
           acc.setUser(UserModel.fromJson(snapshot.data.data));
-          return const ChatsScreen();
+          return const HomeScreen();
         } else {
           Get.lazyPut(() => RegisterController());
           return const StartScreen();

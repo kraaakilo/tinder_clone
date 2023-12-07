@@ -44,18 +44,21 @@ class Discussion {
 }
 
 class Participants {
+  int? id;
   String? name;
   String? email;
 
-  Participants({this.name, this.email});
+  Participants({this.name, this.email, this.id});
 
   Participants.fromJson(Map<String, dynamic> json) {
+    id = json['id'];
     name = json['name'];
     email = json['email'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
+    data['id'] = id;
     data['name'] = name;
     data['email'] = email;
     return data;

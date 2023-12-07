@@ -92,6 +92,8 @@ class _ChatsScreenState extends State<ChatsScreen> {
                           onTap: () {
                             Get.to(
                               () => SingleChatScreen(
+                                receiverId:
+                                    discussions[index].participants![0].id!,
                                 conversationId: discussions[index].id!,
                               ),
                               transition: Transition.cupertino,

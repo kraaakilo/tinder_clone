@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:tinder_clone/controllers/login.dart';
+import 'package:tinder_clone/controllers/register.dart';
 import 'package:tinder_clone/pages/login/email.dart';
 import 'package:tinder_clone/pages/register/phone.dart';
 
@@ -70,9 +71,10 @@ class StartScreen extends StatelessWidget {
                     height: 50,
                     child: ElevatedButton(
                       onPressed: () {
+                        Get.lazyPut(() => RegisterController());
                         Get.to(
-                          const GetPhoneScreen(),
-                          transition: Transition.zoom,
+                          () => const GetPhoneScreen(),
+                          transition: Transition.upToDown,
                         );
                       },
                       style: ElevatedButton.styleFrom(
@@ -86,6 +88,7 @@ class StartScreen extends StatelessWidget {
                         "CREATE ACCOUNT",
                         style: TextStyle(
                           fontSize: 15,
+			color: Colors.white
                         ),
                       ),
                     ),
@@ -102,7 +105,7 @@ class StartScreen extends StatelessWidget {
                         Get.lazyPut(() => LoginController());
                         Get.to(
                           () => const GetEmailForLoginScreen(),
-                          transition: Transition.zoom,
+                          transition: Transition.downToUp,
                         );
                       },
                       style: ElevatedButton.styleFrom(

@@ -12,5 +12,13 @@ ThemeData buildTheme(ColorScheme colorScheme) {
   return baseTheme.copyWith(
     primaryColor: const Color(0xFFf3606e),
     textTheme: GoogleFonts.interTextTheme(baseTheme.textTheme),
+    scaffoldBackgroundColor: Colors.white,
+    buttonTheme: baseTheme.buttonTheme.copyWith(
+      buttonColor: const Color(0xFFf3606e),
+      textTheme: ButtonTextTheme.primary,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+      ),
+    ),
   );
 }

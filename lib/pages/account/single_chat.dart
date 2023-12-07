@@ -6,7 +6,12 @@ import 'package:tinder_clone/models/chat.dart';
 
 class SingleChatScreen extends StatefulWidget {
   final int conversationId;
-  const SingleChatScreen({super.key, required this.conversationId});
+  final int receiverId;
+  const SingleChatScreen({
+    super.key,
+    required this.receiverId,
+    required this.conversationId,
+  });
 
   @override
   State<SingleChatScreen> createState() => _SingleChatScreenState();
@@ -14,6 +19,8 @@ class SingleChatScreen extends StatefulWidget {
 
 class _SingleChatScreenState extends State<SingleChatScreen> {
   final ScrollController _scrollController = ScrollController();
+  final TextEditingController _textEditingController = TextEditingController();
+  int currentPage = 0;
   List<SingleMessageModel> messages = [];
   @override
   void initState() {
@@ -21,7 +28,11 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
     _loadMessages();
     _scrollController.addListener(() {
       if (_scrollController.position.atEdge) {
-        if (_scrollController.position.pixels == 0) {
+        if (!(_scrollController.position.pixels == 0)) {
+          setState(() {
+            currentPage++;
+            _loadMessages(page: currentPage);
+          });
           debugPrint("Top");
         } else {
           debugPrint("Bottom");
@@ -30,8 +41,8 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
     });
   }
 
-  Future<void> _loadMessages() async {
-    var response = dio.get("/chats/${widget.conversationId}");
+  Future<void> _loadMessages({int page = 0}) async {
+    var response = dio.get("/chats/${widget.conversationId}?page=$page");
     List<SingleMessageModel> array = (await response)
         .data["data"]
         .map<SingleMessageModel>((e) => SingleMessageModel.fromJson(e))
@@ -68,6 +79,7 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
             ),
             child: SizedBox(
               child: TextFormField(
+                controller: _textEditingController,
                 decoration: InputDecoration(
                   filled: true,
                   border: OutlineInputBorder(
@@ -75,7 +87,22 @@ class _SingleChatScreenState extends State<SingleChatScreen> {
                     borderSide: BorderSide.none,
                   ),
                   hintText: "Type a message...",
-                  suffix: const Text("Send"),
+                  suffix: GestureDetector(
+                    child: const Text("Send"),
+                    onTap: () {
+                      if (_textEditingController.text.isNotEmpty) {
+                        dio.post("/message", data: {
+                          "conversation_id": widget.conversationId,
+                          "receiver_id": widget.receiverId,
+                          "content": _textEditingController.text,
+                        }).catchError((e) {
+                          debugPrint(e.toString());
+                        });
+                        _textEditingController.clear();
+                        _loadMessages();
+                      }
+                    },
+                  ),
                 ),
               ),
             ),
