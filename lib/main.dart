@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
-import 'package:tinder_clone/api/firebase_api.dart';
 import 'package:tinder_clone/config/dio.dart';
 import 'package:tinder_clone/config/theme.dart';
 import 'package:tinder_clone/controllers/account.dart';
@@ -10,21 +9,15 @@ import 'package:tinder_clone/models/user.dart';
 import 'package:tinder_clone/pages/account/chats.dart';
 import 'package:tinder_clone/pages/start_screen.dart';
 import 'package:tinder_clone/providers/tinder_card_provider.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  FirebaseApi().initNotification();
   await AuthInterceptor.init();
   runApp(
     ChangeNotifierProvider(
       create: (context) => TinderCardProvider(),
       child: GetMaterialApp(
-        theme: buildTheme(Brightness.light),
+        theme: buildTheme(const ColorScheme.light()),
         debugShowCheckedModeBanner: false,
         title: "Tinder Clone",
         home: const App(),

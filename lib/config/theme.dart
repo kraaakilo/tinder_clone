@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-ThemeData buildTheme(brightness) {
-  var baseTheme = ThemeData(brightness: brightness);
+ThemeData buildTheme(ColorScheme colorScheme) {
+  var baseTheme = ThemeData.from(
+    colorScheme: colorScheme,
+    useMaterial3: false,
+  ).copyWith(
+    primaryColor: const Color(0xFFf3606e),
+  );
 
   return baseTheme.copyWith(
     primaryColor: const Color(0xFFf3606e),

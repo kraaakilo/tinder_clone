@@ -2,13 +2,13 @@ import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final options = BaseOptions(
-  baseUrl: 'http://192.168.1.2:8000/api',
-  connectTimeout: const Duration(seconds: 15),
+  baseUrl: 'https://tinder-clone-pisw.onrender.com/api',
+  connectTimeout: const Duration(seconds: 60),
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
   },
-  receiveTimeout: const Duration(seconds: 10),
+  receiveTimeout: const Duration(seconds: 60),
 );
 final dio = Dio(options);
 
