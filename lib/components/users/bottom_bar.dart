@@ -31,18 +31,6 @@ class BottomBar extends StatelessWidget {
             label: "Profile",
           ),
           BottomNavigationBarItem(
-            icon: SvgPicture.asset(
-              "assets/icons/star.svg",
-              semanticsLabel: 'A red up arrow',
-              height: 35,
-            ),
-            label: "Chats",
-          ),
-          const BottomNavigationBarItem(
-            icon: Icon(Icons.grid_view_outlined),
-            label: "Profile",
-          ),
-          BottomNavigationBarItem(
             icon: InkWell(
               onTap: () {
                 Get.to(() => const ChatsScreen());

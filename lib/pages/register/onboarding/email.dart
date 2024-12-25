@@ -1,7 +1,9 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:tinder_clone/controllers/register.dart';
 import 'package:get/get.dart';
 import 'package:tinder_clone/pages/register/onboarding/name.dart';
+import 'package:tinder_clone/config/dio.dart';
 
 class GetEmailScreen extends StatefulWidget {
   const GetEmailScreen({super.key});
@@ -12,7 +14,7 @@ class GetEmailScreen extends StatefulWidget {
 
 class _GetEmailScreenState extends State<GetEmailScreen> {
   final registerController = Get.find<RegisterController>();
-  bool isUsedEmail = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,11 +47,8 @@ class _GetEmailScreenState extends State<GetEmailScreen> {
               ),
               Obx(
                 () => TextFormField(
-                  initialValue: registerController.name.value,
+                  initialValue: registerController.email.value,
                   onChanged: (value) {
-                    setState(() {
-                      isUsedEmail = false;
-                    });
                     registerController.setEmail(value);
                   },
                   decoration: InputDecoration(
@@ -64,16 +63,6 @@ class _GetEmailScreenState extends State<GetEmailScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              isUsedEmail
-                  ? const Text(
-                      "Email already in use.",
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: Colors.red,
-                      ),
-                    )
-                  : const SizedBox(),
-              const SizedBox(height: 12),
               const Text(
                 "This won't be shown publicly. Confirm your email later.",
                 style: TextStyle(
@@ -87,20 +76,24 @@ class _GetEmailScreenState extends State<GetEmailScreen> {
                 height: 50,
                 child: Obx(
                   () => ElevatedButton(
-                    onPressed: registerController.email.value.isNotEmpty
+                    onPressed: registerController.email.value.isEmail
                         ? () async {
-                            isUsedEmail = await _checkIsUsedEmail(
+                            var r = await _checkIsUsedEmail(
                                 registerController.email.value);
-                            if (isUsedEmail) {
-                              setState(() {
-                                isUsedEmail = true;
-                              });
-                              return;
+                            if (r) {
+                              Get.showSnackbar(
+                                const GetSnackBar(
+                                  backgroundColor: Colors.red,
+                                  message: "The email is already in use.",
+                                  duration: Duration(seconds: 2),
+                                ),
+                              );
+                            } else {
+                              Get.to(
+                                () => const GetNameScreen(),
+                                transition: Transition.rightToLeft,
+                              );
                             }
-                            Get.to(
-                              () => const GetNameScreen(),
-                              transition: Transition.rightToLeft,
-                            );
                           }
                         : null,
                     style: ElevatedButton.styleFrom(
@@ -127,7 +120,14 @@ class _GetEmailScreenState extends State<GetEmailScreen> {
   }
 
   Future<bool> _checkIsUsedEmail(String email) async {
-    await Future.delayed(const Duration(milliseconds: 200));
-    return false;
+    try {
+      await dio.get(
+        "/register/email-check",
+        queryParameters: {'email': email},
+      );
+      return true;
+    } on DioException catch (e) {
+      return false;
+    }
   }
 }

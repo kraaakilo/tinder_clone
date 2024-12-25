@@ -73,7 +73,7 @@ class _GetNameScreenState extends State<GetNameScreen> {
                 height: 50,
                 child: Obx(
                   () => ElevatedButton(
-                    onPressed: registerController.name.value.isNotEmpty
+                    onPressed: registerController.name.value.length > 4
                         ? () {
                             FocusScope.of(context).unfocus();
                             Get.to(

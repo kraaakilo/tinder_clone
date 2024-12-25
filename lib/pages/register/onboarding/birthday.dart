@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:tinder_clone/controllers/register.dart';
 import 'package:get/get.dart';
 import 'package:tinder_clone/pages/register/onboarding/passions.dart';
@@ -12,6 +13,24 @@ class GetBirthScreen extends StatefulWidget {
 
 class _GetBirthScreenState extends State<GetBirthScreen> {
   final registerController = Get.find<RegisterController>();
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: registerController.dob.value,
+      firstDate: DateTime(1950),
+      lastDate: DateTime.now(),
+    );
+    if (picked != null && picked != registerController.dob.value) {
+      registerController.setDob(picked);
+    }
+  }
+
+  String _formatDate(DateTime date) {
+    final DateFormat formatter = DateFormat('dd/MM/yyyy');
+    return formatter.format(date);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,27 +61,29 @@ class _GetBirthScreenState extends State<GetBirthScreen> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              Obx(
-                () => GestureDetector(
-                  onTap: () {
-                    registerController.setDob("value");
-                  },
-                  child: TextFormField(
-                    initialValue: registerController.dob.value,
-                    enabled: true,
-                    onChanged: (value) {
-                      registerController.setDob(value);
-                    },
-                    decoration: const InputDecoration(
-                      hintText: "DD / MM / YYYY",
-                      focusedBorder: UnderlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Color(0xFFf3606e),
+              GestureDetector(
+                onTap: () {
+                  _selectDate(context);
+                },
+                child: Column(
+                  children: [
+                    const SizedBox(height: 40),
+                    Obx(
+                      () => Text(
+                        _formatDate(registerController.dob.value),
+                        style: const TextStyle(
+                          fontSize: 16,
                         ),
                       ),
                     ),
-                    keyboardType: TextInputType.datetime,
-                  ),
+                    const SizedBox(height: 10),
+                    Container(
+                      height: 1,
+                      decoration: const BoxDecoration(
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
                 ),
               ),
               const SizedBox(height: 20),
@@ -79,7 +100,7 @@ class _GetBirthScreenState extends State<GetBirthScreen> {
                 height: 50,
                 child: Obx(
                   () => ElevatedButton(
-                    onPressed: registerController.name.value.isNotEmpty
+                    onPressed: registerController.dob.value.year < (DateTime.now().year - 18)
                         ? () {
                             FocusScope.of(context).unfocus();
                             Get.to(

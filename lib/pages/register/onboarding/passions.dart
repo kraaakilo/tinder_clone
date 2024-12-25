@@ -16,6 +16,7 @@ class GetPassionsScreen extends StatefulWidget {
 
 class _GetPassionsScreenState extends State<GetPassionsScreen> {
   final r = Get.find<RegisterController>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -58,66 +59,64 @@ class _GetPassionsScreenState extends State<GetPassionsScreen> {
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.5,
                 child: SingleChildScrollView(
-                  child: Expanded(
-                    child: Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: passions
-                          .map(
-                            (interest) => GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  if (r.interests.contains(interest)) {
-                                    r.interests.remove(interest);
-                                  } else if (r.interests.length < 5) {
-                                    r.interests.add(interest);
-                                  } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text(
-                                          "You can only choose 5 interests",
-                                        ),
+                  physics: const BouncingScrollPhysics(),
+                  child: Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: passions
+                        .map(
+                          (interest) => GestureDetector(
+                            onTap: () {
+                              setState(() {
+                                if (r.interests.contains(interest)) {
+                                  r.interests.remove(interest);
+                                } else if (r.interests.length < 5) {
+                                  r.interests.add(interest);
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        "You can only choose 5 interests",
                                       ),
-                                    );
-                                  }
-                                });
-                              },
-                              child: AnimatedScale(
-                                scale:
-                                    r.interests.contains(interest) ? 1.03 : 1,
+                                    ),
+                                  );
+                                }
+                              });
+                            },
+                            child: AnimatedScale(
+                              scale: r.interests.contains(interest) ? 1.03 : 1,
+                              duration: const Duration(milliseconds: 300),
+                              child: AnimatedContainer(
                                 duration: const Duration(milliseconds: 300),
-                                child: AnimatedContainer(
-                                  duration: const Duration(milliseconds: 300),
-                                  curve: Curves.easeInOut,
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 8,
-                                    vertical: 4,
+                                curve: Curves.easeInOut,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(18),
+                                  border: Border.all(
+                                    color: r.interests.contains(interest)
+                                        ? Theme.of(context).primaryColor
+                                        : Colors.grey.withOpacity(0.5),
+                                    width: 1,
                                   ),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(18),
-                                    border: Border.all(
-                                      color: r.interests.contains(interest)
-                                          ? Theme.of(context).primaryColor
-                                          : Colors.grey.withOpacity(0.5),
-                                      width: 1,
-                                    ),
-                                  ),
-                                  child: Text(
-                                    interest,
-                                    style: TextStyle(
-                                      color: r.interests.contains(interest)
-                                          ? Theme.of(context).primaryColor
-                                          : Colors.grey[400],
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 15,
-                                    ),
+                                ),
+                                child: Text(
+                                  interest,
+                                  style: TextStyle(
+                                    color: r.interests.contains(interest)
+                                        ? Theme.of(context).primaryColor
+                                        : Colors.grey[400],
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15,
                                   ),
                                 ),
                               ),
                             ),
-                          )
-                          .toList(),
-                    ),
+                          ),
+                        )
+                        .toList(),
                   ),
                 ),
               ),
@@ -186,12 +185,17 @@ class _GetPassionsScreenState extends State<GetPassionsScreen> {
       });
     } on DioException catch (e) {
       if (e.response != null) {
-        debugPrint(e.response!.data.toString());
+        String message;
+        try {
+          message = e.response!.data["message"];
+        } catch (e) {
+          message = "An error has occured!";
+        }
         Get.showSnackbar(
-          const GetSnackBar(
+          GetSnackBar(
             backgroundColor: Colors.red,
-            message: "An error occured",
-            duration: Duration(seconds: 2),
+            message: message,
+            duration: const Duration(seconds: 2),
           ),
         );
       }

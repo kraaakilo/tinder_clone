@@ -1,19 +1,20 @@
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
 class RegisterController extends GetxController {
-  final phoneNumber = "sssssssss".obs;
+  final phoneNumber = "00000000".obs;
   final prefixCode = "1".obs;
   final countryCode = "US".obs;
-  final email = "sss@sss.com".obs;
+  final email = "kraaakilo@m3a.site".obs;
 
-  final gender = "MALE".obs;
+  final gender = "".obs;
   final showGenderOnProfile = false.obs;
 
-  final dob = "sssssss".obs;
+  final dob = DateTime.now().obs;
 
   final interests = <String>[].obs;
 
-  final name = "sssss".obs;
+  final name = "Mr TripleA".obs;
 
   void setPhoneNumber(String value) {
     phoneNumber.value = value;
@@ -47,7 +48,7 @@ class RegisterController extends GetxController {
     showGenderOnProfile.value = value;
   }
 
-  void setDob(String value) {
+  void setDob(DateTime value) {
     dob.value = value;
   }
 
@@ -56,8 +57,10 @@ class RegisterController extends GetxController {
   }
 
   bool canGoToNameStep() {
+    final RegExp numberRegExp = RegExp(r'^\d+(\.\d+)?$');
     return phoneNumber.value.isNotEmpty &&
         phoneNumber.value.length >= 8 &&
+        numberRegExp.hasMatch(phoneNumber.value) &&
         prefixCode.value.isNotEmpty &&
         countryCode.value.isNotEmpty;
   }
@@ -69,7 +72,7 @@ class RegisterController extends GetxController {
     data['email'] = email.value;
     data['gender'] = gender.value;
     data['showGenderOnProfile'] = showGenderOnProfile.value.toString();
-    data['birthday'] = dob.value;
+    data['birthday'] = dob.toString();
     data['passions'] = interests.join(',');
     data['name'] = name.value;
     return data;

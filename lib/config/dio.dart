@@ -2,13 +2,13 @@ import 'package:dio/dio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 final options = BaseOptions(
-  baseUrl: 'http://192.168.1.2:8000/api',
-  connectTimeout: const Duration(seconds: 60),
+  baseUrl: 'http://192.168.1.30:8000/api/',
+  connectTimeout: const Duration(seconds: 4),
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
   },
-  receiveTimeout: const Duration(seconds: 60),
+  receiveTimeout: const Duration(seconds: 5),
 );
 final dio = Dio(options);
 

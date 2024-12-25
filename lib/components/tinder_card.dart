@@ -50,6 +50,7 @@ class _TinderCardState extends State<TinderCard> {
   }
 
   Widget _buildCard() {
+    debugPrint(widget.user.avatar);
     return ClipRRect(
       borderRadius: const BorderRadius.all(
         Radius.circular(15.0),
@@ -61,10 +62,10 @@ class _TinderCardState extends State<TinderCard> {
             PreloadPageView(
               controller: _pageController,
               physics: const NeverScrollableScrollPhysics(),
-              children: widget.user.photos
+              children: [1, 2, 3]
                   .map(
                     (image) => Image.network(
-                      image,
+                      "http://192.168.1.30:8000/photos/LBCKBvkYGzIRroyRwvSoXgVyGg5drpH0DqX9i5VO.png",
                       fit: BoxFit.cover,
                       loadingBuilder: (
                         BuildContext context,

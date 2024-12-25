@@ -13,48 +13,50 @@ class RegisterDoneScreen extends StatelessWidget {
           horizontal: 35,
           vertical: 20,
         ),
-        child: SafeArea(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              GestureDetector(
-                onTap: () {
-                  Navigator.pop(context);
-                },
-                child: const Icon(
-                  Icons.arrow_back_ios,
-                  size: 25,
-                  color: Colors.grey,
+        child: SingleChildScrollView(
+          child: SafeArea(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: const Icon(
+                    Icons.arrow_back_ios,
+                    size: 25,
+                    color: Colors.grey,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 40),
-              const Text(
-                "Want to avoid someone you know on Tinder ?",
-                style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
+                const SizedBox(height: 40),
+                const Text(
+                  "Want to avoid someone you know on Tinder ?",
+                  style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                "It's easy - share your device's contacts with Tinder when using this feature to pick who you want to avoid.",
-                style: TextStyle(
-                  fontSize: 17,
-                  height: 1.3,
-                  color: Colors.grey,
+                const SizedBox(height: 20),
+                const Text(
+                  "It's easy - share your device's contacts with Tinder when using this feature to pick who you want to avoid.",
+                  style: TextStyle(
+                    fontSize: 17,
+                    height: 1.3,
+                    color: Colors.grey,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20),
-              const Text(
-                "We'll store your blocked contacts to stop you from seeing each other if your contact has an account with the same info you provide. You can stop sharing contacts with us in your settings.",
-                style: TextStyle(
-                  fontSize: 17,
-                  height: 1.3,
-                  color: Colors.grey,
+                const SizedBox(height: 20),
+                const Text(
+                  "We'll store your blocked contacts to stop you from seeing each other if your contact has an account with the same info you provide. You can stop sharing contacts with us in your settings.",
+                  style: TextStyle(
+                    fontSize: 17,
+                    height: 1.3,
+                    color: Colors.grey,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20),
-            ],
+                const SizedBox(height: 20),
+              ],
+            ),
           ),
         ),
       ),

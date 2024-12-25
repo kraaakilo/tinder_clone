@@ -53,7 +53,11 @@ class _GetGenderScreenState extends State<GetGenderScreen> {
                     .map(
                       (e) => GestureDetector(
                         onTap: () {
-                          registerController.setGender(e);
+                          if (registerController.gender.value == e) {
+                            registerController.setGender("");
+                          } else {
+                            registerController.setGender(e);
+                          }
                         },
                         child: Obx(
                           () => Container(
@@ -66,7 +70,7 @@ class _GetGenderScreenState extends State<GetGenderScreen> {
                               border: Border.all(
                                 color: e == registerController.gender.value
                                     ? Theme.of(context).primaryColor
-                                    : Colors.grey.withOpacity(0.5),
+                                    : Colors.grey.withValues(alpha: 0.4),
                               ),
                               borderRadius: BorderRadius.circular(25),
                             ),
